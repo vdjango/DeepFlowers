@@ -97,10 +97,14 @@ if os.path.exists(image_dataset_path['test']):
 
         for root, dirs, files in os.walk(image_dataset_path['test']):
             for file in files:
-                out = os.path.join(image_dataset_path['test_data'], '0')
-                if not os.path.exists(out):
-                    os.makedirs(out)
+                _name = file.split('.')[1]
+                _class_id = file.split('.')[0]
 
-                src_file = os.path.join(root, file)
-                shutil.copy(src_file, out)
-                print(src_file)
+                source = os.path.join(root, file)
+                test_target_out = os.path.join(image_dataset_path['test_data'], _class_id)
+
+                if not os.path.exists(test_target_out):
+                    os.makedirs(test_target_out)
+
+                shutil.copy(source, test_target_out)
+                print(test_target_out, file)

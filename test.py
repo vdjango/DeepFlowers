@@ -10,18 +10,14 @@ from utils import imshow
 
 class TestModel(object):
 
-    def __init__(self, pretrained=False, *args, **kwargs):
+    def __init__(self, pretrained=False, model_path=None, *args, **kwargs):
         self.model_save = './model'
-        self.data_url = './data/54_data/'
+        self.data_url = './data/102_data/'
+        self.model_path = model_path
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         self.data_transforms = {
-            'train': transforms.Compose([
-                transforms.Resize(256),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-            ]),
-            'val': transforms.Compose([
+            'test': transforms.Compose([
                 transforms.Resize(256),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
@@ -31,24 +27,25 @@ class TestModel(object):
             x: datasets.ImageFolder(
                 os.path.join(self.data_url, x),
                 self.data_transforms[x]
-            ) for x in ['train', 'val']
+            ) for x in ['test']
         }
-        data_loader_train = DataLoader(
-            self.image_datasets['train'],
-            shuffle=True, num_workers=4
-        )
-        data_loader_val = DataLoader(
-            self.image_datasets['val'],
+
+        data_loader_test = DataLoader(
+            self.image_datasets['test'],
             shuffle=True, num_workers=4
         )
 
         self.dataloaders = {
-            'train': data_loader_train,
-            'val': data_loader_val
+            'test': data_loader_test
         }
         self.out = []
 
         self.net = RNet(pretrained=pretrained)
+        if self.model_path:
+            print('PyTorch Load state ...')
+            self.net.load_state_dict(torch.load(self.model_path))
+            print('PyTorch Load state Model OK!')
+
         self.net.to(self.device)
 
     def test(self, net, datasets='test'):
@@ -58,20 +55,17 @@ class TestModel(object):
         :param datasets:
         :return:
         """
-<<<<<<< HEAD
 
-=======
->>>>>>> parent of 9a54e7c... 基于resnet152模型的迁移学习-102花朵分类
         net.eval()
-        class_names = self.image_datasets['train'].classes
+        class_names = self.image_datasets['test'].classes
 
         with torch.no_grad():
             for inputs, labels in self.dataloaders[datasets]:
                 inputs = inputs.to(self.device)
+                labels = labels.to(self.device)
                 outputs = net(inputs)
                 _, predicted = torch.max(outputs, 1)
                 for i in range(inputs.size()[0]):
-<<<<<<< HEAD
                     # class_predicted = class_names[predicted[i]]  # DELETE
                     self.out.append([labels.cpu().item(), predicted[i].cpu().item()])
                     # print('predicted:', predicted[i].cpu().item())
@@ -85,11 +79,6 @@ class TestModel(object):
             for _cs in self.out:
                 c.writerow(_cs)
         pass
-=======
-                    class_predicted = class_names[predicted[i]]
-                    print('predicted:', class_predicted)
-                    imshow(inputs.cpu().data[i], title='predicted: {}'.format(class_predicted))
->>>>>>> parent of 9a54e7c... 基于resnet152模型的迁移学习-102花朵分类
 
     def __call__(self, *args, **kwargs):
         """
@@ -102,7 +91,6 @@ class TestModel(object):
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     path = os.path.join('model/best/best_4990_94.pt')
     model_path = None
 
@@ -111,9 +99,6 @@ if __name__ == '__main__':
 
     test = TestModel(pretrained=True, model_path=model_path)
     # test.save_csv()
-=======
-    test = TestModel(pretrained=True)
->>>>>>> parent of 9a54e7c... 基于resnet152模型的迁移学习-102花朵分类
     test()
     test.save_csv()
 

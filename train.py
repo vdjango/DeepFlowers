@@ -13,13 +13,10 @@ from utils import imshow
 
 class TrainModel(object):
 
-    def __init__(self, pretrained=False, *args, **kwargs):
+    def __init__(self, pretrained=False, model_path=None, *args, **kwargs):
         self.model_save = './model'
         self.data_url = './data/102_data/'
-<<<<<<< HEAD
         self.model_path = model_path
-=======
->>>>>>> parent of 9a54e7c... 基于resnet152模型的迁移学习-102花朵分类
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         self.data_transforms = {
@@ -61,6 +58,11 @@ class TrainModel(object):
         }
 
         self.net = RNet(pretrained=pretrained)
+        if self.model_path:
+            print('PyTorch Load state ...')
+            self.net.load_state_dict(torch.load(self.model_path))
+            print('PyTorch Load state Model OK!')
+
         self.net.to(self.device)
 
         self.criterion = nn.CrossEntropyLoss()
@@ -152,6 +154,44 @@ class TrainModel(object):
 
         return self.net
 
+    def test(self, criterion, data='val'):
+        """
+        训练模型
+        :param model:
+        :param criterion:
+        :param optimizer:
+        :param scheduler:
+        :param num_epochs:
+        :return:
+        """
+
+        dataset_sizes = {x: len(self.image_datasets[x]) for x in [data]}
+        self.net.eval()
+
+        with torch.no_grad():
+            criterion_loss = 0.0
+            criterion_corrects = 0
+
+            for inputs, labels in self.dataloaders[data]:
+                inputs = inputs.to(self.device)
+                labels = labels.to(self.device)
+
+                outputs = self.net(inputs)
+                _, preds = torch.max(outputs, 1)
+                loss = criterion(outputs, labels)
+
+                criterion_loss += loss.item() * inputs.size(0)
+                criterion_corrects += torch.sum(preds == labels.data)
+
+            epochs_loss = criterion_loss / dataset_sizes[data]
+            epochs_acc = criterion_corrects.double() / dataset_sizes[data]
+
+            print('{} Loss: {:.8f} Acc: {:.8f}'.format(
+                data, epochs_loss, epochs_acc)
+            )
+
+        return
+
     def save(self, net, path, name):
         """
         保存模型参数
@@ -164,27 +204,7 @@ class TrainModel(object):
         torch.save(net.state_dict(), os.path.join(path, '{}.pt'.format(name)))
         print('Model Save Path: {}/{}'.format(path, name))
 
-    def test(self, net, datasets='val'):
-        """
-        测试模型
-        :param model:
-        :param datasets:
-        :return:
-        """
-        net.eval()
-        class_names = self.image_datasets['train'].classes
-
-        with torch.no_grad():
-            for inputs, labels in self.dataloaders[datasets]:
-                inputs = inputs.to(self.device)
-                outputs = net(inputs)
-                _, predicted = torch.max(outputs, 1)
-                for i in range(inputs.size()[0]):
-                    class_predicted = class_names[predicted[i]]
-                    print('predicted:', class_predicted)
-                    imshow(inputs.cpu().data[i], title='predicted: {}'.format(class_predicted))
-
-    def __call__(self, *args, **kwargs):
+    def __call__(self, num_epochs=5000, *args, **kwargs):
         """
         入口方法
         :param args:
@@ -194,7 +214,7 @@ class TrainModel(object):
         # self.test(self.net)
         net = self.train(
             self.criterion, self.optimizer,
-            self.exp_lr_scheduler
+            self.exp_lr_scheduler, num_epochs
         )
         # self.test(self.criterion)
 
@@ -202,7 +222,6 @@ class TrainModel(object):
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     path = os.path.join('model/best/best_4990_94.pt')
     model_path = None
 
@@ -212,7 +231,3 @@ if __name__ == '__main__':
     train = TrainModel(pretrained=True, model_path=model_path)
     # train()
     train.test(train.criterion)
-=======
-    train = TrainModel(pretrained=True)
-    train()
->>>>>>> parent of 9a54e7c... 基于resnet152模型的迁移学习-102花朵分类
