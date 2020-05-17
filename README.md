@@ -4,6 +4,21 @@
 相反，通常在非常大的数据集上对ConvNet进行预训练（例如ImageNet，其中包含120万个具有1000个类别的图像），
 然后将ConvNet用作初始化或固定特征提取器以完成感兴趣的任务
 
+----
+
+<table style="width:100%">
+  <tr>
+    <td>
+      <img src="data/1091.jpg">
+    </td>
+    <td align="center">
+        <img src="data/1473.jpg">
+    </td>
+    <td>
+      <img src="data/968.jpg">
+    </td>
+  </tr>
+</table>
 
 # 描述
 
@@ -25,8 +40,7 @@ PPython 3.7或更高版本，pip install -U -r requirements.txt包括以下所�
 * data/54_data 是数据集，测试集和训练集数据相同
 * data/102_data 是数据集，测试集和训练集数据不同
 * model/resnet/ 存放预训练模型及训练好的模型
-* model/best_2428_95.pt 训练好的模型，第2428次批训练，精度更高
-* model/best_4990_94.pt 训练好的模型，第4990次批训练，性能更好【可用于生产】
+* model/best_4990_94.pt 训练好的模型，第4990次批训练
 
 # 训练
 
@@ -46,7 +60,6 @@ PPython 3.7或更高版本，pip install -U -r requirements.txt包括以下所�
 
 GPU | data  | Loss | Acc | epoch |
 --- |--- |--- |--- |--- |
-| RTX 2080 12G | best_2428_95 `102_data` | 0.1973 | 0.9522 | 2428 |
 | RTX 2080 12G | best_4990_94 `102_data` | 0.1955 | 0.9454 | 4990 |
 | RTX 2080 12G | best_100_80 `54_data-基于102_data数据集模型继续训练` | 4.3695 | 0.8007 | 100 |
 
