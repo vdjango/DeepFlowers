@@ -1,0 +1,1 @@
+wget https://download.pytorch.org/models/resnet152-b121ed2d.pth

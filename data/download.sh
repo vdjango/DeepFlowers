@@ -1,0 +1,1 @@
+echo 'wget https://static.leiphone.com/54_data.zip'
