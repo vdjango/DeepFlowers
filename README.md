@@ -52,7 +52,7 @@ PPython 3.7或更高版本，pip install -U -r requirements.txt包括以下所�
 
 > 从以下位置下载： [百度网盘 密码:6w3r](https://pan.baidu.com/s/19acqKjAfqP4yJGVbfHG13Q  )
 
-**GPU：** Nvidia RTX 2080 12G
+**GPU：** 本君的机器是`Nvidia RTX 2080 12G`，有N卡或CPU就可以训练，CPU慢而已
 
 **数据集：** 102_data (102类别-54_data整理而来)
 
